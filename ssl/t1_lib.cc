@@ -1611,7 +1611,13 @@ static bool ext_srtp_parse_clienthello(SSL_HANDSHAKE *hs, uint8_t *out_alert,
 
   const STACK_OF(SRTP_PROTECTION_PROFILE) *server_profiles =
       SSL_get_srtp_profiles(ssl);
-
+  
+  if(server_profiles==NULL)
+  {
+    OPENSSL_PUT_ERROR(SSL, SSL_R_BAD_SRTP_PROTECTION_PROFILE_LIST);
+    *out_alert = SSL_AD_DECODE_ERROR;
+    return false;
+  }
   // Pick the server's most preferred profile.
   for (const SRTP_PROTECTION_PROFILE *server_profile : server_profiles) {
     CBS profile_ids_tmp;
